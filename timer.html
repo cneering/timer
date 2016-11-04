@@ -1,0 +1,145 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Timers</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+		.container {
+			padding: 15px;
+		}
+		.button {
+			width: 150px;
+			margin-right: 15px;
+			padding: 10px 20px;
+			font-size: 28px;
+			background: #ccc;
+			color: white;
+			cursor: pointer;
+			text-align: center;
+			float: left;
+		}
+		.active {
+			background: #12d5ee;
+		}
+		span {
+			color: gray;
+			font-size: 20px;
+			display: block;
+			padding-top: 3px;
+			float: right;
+		}
+		.clear {
+			display: table;
+			content: '';
+			clear: both;
+		}
+	</style>
+</head>
+<body>
+	<div class="time"></div>
+	<div class="stretchContainer  container clear">
+		<div id="stretchTimer" class="button">STRETCH</div>
+	</div>
+	<div class="eyeContainer  container clear">
+		<div id="eyeTimer" class="button">TIMER</div>
+	</div>
+	<label for="fader">Minutes:</label>
+	<input type="range" min="1" max="30" value="15" id="fader" step="1" oninput="outputUpdate(value)">
+	<output for="fader" id="setTime">15</output>
+</body>
+<script>
+	$(document).ready(function(){
+		// do nothing
+	});
+
+	function myFunction(container,runTime) { 
+		var currentdate = new Date(); // get date and time
+		var datetime = "Last Sync: " + currentdate.getDate() + "/" // used for testing data
+			+ (currentdate.getMonth()+1)  + "/" 
+			+ currentdate.getFullYear() + " @ "  
+			+ currentdate.getHours() + ":"  
+			+ currentdate.getMinutes() + ":" 
+			+ currentdate.getSeconds();
+		if (container.find('span')) {
+			container.find('span').remove();
+		}
+
+		// deal with minutes less than 10, add zero if needed
+		var hour = currentdate.getHours();
+		var minutes = currentdate.getMinutes();
+		var seconds = currentdate.getSeconds();
+		function formateTime(time) {
+			var num1, num2;
+			if (time >= 10) { // convert time into two seperate digits
+				num1 = time.toString().slice(0,1);
+				num2 = time.toString().slice(1,2);
+				console.debug('Min1 = ' + num1 + ' / Min2 = ' + num2 );
+			} else {
+				num1 = 0;
+				num2 = time;
+			}
+			return (num1 + '' + num2);
+		}
+		
+		var runMintues = runTime % 60; // minutes on the timer minus the hours
+		var newMintues = minutes + runMintues; // new total minutes
+		var min60AddHour = newMintues >= 60 ? 1 : 0; // add an hour if minutes are more than 60
+		var endMinutes = newMintues >= 60 ? (newMintues % 60) : newMintues; // actual minute time to display
+
+		var runHours = Math.floor(runTime / 60); // hours on the timer
+		var newHour = hour + runHours + min60AddHour; // total new hours
+		var actualHour = newHour - (newHour > 12 ? 12 : 0); // convert hours from military time
+ 
+ 		container.append('<span class="printTime">' + hour + ':' + formateTime(minutes) + ':' + formateTime(seconds) + ' - ' + actualHour + ':' + formateTime(endMinutes) + ':' +  formateTime(seconds) + '<br> Run for ' + runTime + ' minutes</span>');
+	}
+	function convertMinutes(minutes) {
+		var milliseconds = (minutes * 60) * 1000;
+		return milliseconds;
+	}
+
+	var timer1;
+	function firstTimer() {
+		window.clearTimeout(timer1);
+		minutesToRun = 30;
+		if ($('#stretchTimer').hasClass('active')) {
+			$('#stretchTimer').removeClass('active');
+			$('.stretchContainer span').remove();
+		} else {
+			$('#stretchTimer').addClass('active');
+			myFunction( $('.stretchContainer') , minutesToRun);
+			timer1 = window.setTimeout(function() {
+				alert('Stretch');
+				$('#stretchTimer').removeClass('active');
+				$('.stretchContainer span').remove();
+			}, convertMinutes(minutesToRun) );
+		}
+	}
+	$('#stretchTimer').on('click', function() {
+		firstTimer();
+	});
+
+	var timer2;
+	function secondTimer() {
+		window.clearTimeout(timer2);
+		minutesToRun = document.querySelector('#setTime').value;
+		$('#eyeTimer').addClass('active');
+		myFunction( $('.eyeContainer') , minutesToRun);
+		timer2 = window.setTimeout(function() {
+			alert('Look Around');
+			$('#eyeTimer').removeClass('active');
+			$('.eyeContainer span').remove();
+		}, convertMinutes(minutesToRun) );
+	}
+	$('#eyeTimer').on('click', function() {
+		secondTimer();
+	});
+
+	function outputUpdate(minutes) {
+		document.querySelector('#setTime').value = minutes;
+	}
+
+</script>
+</html>
