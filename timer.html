@@ -38,6 +38,7 @@
 		}
 	</style>
 </head>
+
 <body>
 	<div class="time"></div>
 	<div class="stretchContainer  container clear">
@@ -50,11 +51,13 @@
 	<input type="range" min="1" max="30" value="15" id="fader" step="1" oninput="outputUpdate(value)">
 	<output for="fader" id="setTime">15</output>
 </body>
+
 <script>
 	$(document).ready(function(){
 		// do nothing
 	});
 
+	// ============ Format Time ============
 	function myFunction(container,runTime) { 
 		var currentdate = new Date(); // get date and time
 		var datetime = "Last Sync: " + currentdate.getDate() + "/" // used for testing data
@@ -100,6 +103,7 @@
 		return milliseconds;
 	}
 
+	// ============ Timer 1 ============
 	var timer1;
 	function firstTimer() {
 		window.clearTimeout(timer1);
@@ -121,6 +125,7 @@
 		firstTimer();
 	});
 
+	// ============ Timer 2 ============
 	var timer2;
 	function secondTimer() {
 		window.clearTimeout(timer2);
@@ -137,7 +142,7 @@
 		secondTimer();
 	});
 
-	function outputUpdate(minutes) {
+	function outputUpdate(minutes) { // update minutes printed to div
 		document.querySelector('#setTime').value = minutes;
 	}
 
